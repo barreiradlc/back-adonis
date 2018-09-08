@@ -67,8 +67,18 @@ class PropertyController {
    * Delete a property with id.
    * DELETE properties/:id
    */
-  async destroy ({ params, request, response }) {
+  async destroy ({ params, auth, response }) {
+    const property = await Property.findOrFail(params.id)
+
+    if (property.user_id !== auth.user.id) {
+      return response.status(401).send({ error: 'Not authorized' })
+
+    }
+
+    await property.delete()
+
   }
+
 }
 
 module.exports = PropertyController
